@@ -1,0 +1,21 @@
+li {
+    list-style-type: none;
+    width: 400px;
+    border: 1px solid grey;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+span {
+    float: right;
+}
+
+form {
+    width: 500px;
+    /*border: 1px solid black;*/
+}
+
+input {
+    margin: 5px;
+}
