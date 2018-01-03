@@ -9,17 +9,31 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="contacts.js"></script>
+    <script src="groups.js"></script>
     <title>Title</title>
 </head>
 <body>
-<h3>Contacts</h3>
-<form>
-    <input id="name" type="text" class="form-control" placeholder="Name">
-    <input id="phone" type="tel" class="form-control" placeholder="Phone">
-    <input id="submit" type="submit" class="btn btn-primary">
-</form>
-<ul id="contacts">
 
-</ul>
+<div class="container">
+    <div class="form">
+        <h3>Contacts</h3>
+        <form id="contactsForm">
+            <input id="name" type="text" class="form-control" placeholder="Name">
+            <input id="phone" type="tel" class="form-control" placeholder="Phone">
+            <input id="submit" type="submit" class="btn btn-primary">
+        </form>
+        <ul id="contacts"></ul>
+    </div>
+
+    <div class="form">
+        <h3>Groups</h3>
+        <form>
+            <input id="title" type="text" class="form-control" placeholder="Title">
+            <input id="groupSubmit" type="submit" class="btn btn-primary">
+        </form>
+        <ul id="groups"></ul>
+    </div>
+</div>
+
 </body>
 </html>

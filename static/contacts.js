@@ -1,19 +1,19 @@
 let contacts = [];
 jQuery(function ($) {
     $('#submit').on('click', addContact);
-    getContacts();
+    getContacts(contacts);
 });
 
 function getContacts() {
     $.get('/api/v1/contacts', function (data) {
         contacts = data.contacts;
         console.log(data);
-        renderContact();
+        renderContact(contacts);
     })
 }
 
-function renderContact() {
-    contacts.forEach(function (element) {
+function renderContact(allContact) {
+    allContact.forEach(function (element) {
         let li = document.createElement('LI');
         li.innerText = element.name + ' ' + element.phone;
         li.setAttribute('id', `${element._id}`);
@@ -33,13 +33,22 @@ function renderContact() {
 }
 
 function addContact() {
+    let group = [];
+    // debugger;
+    document.querySelectorAll('input[type=checkbox]').forEach(function (element) {
+        if (element.checked === true) {
+            group.push(element.value);
+        }
+    });
+    console.log(group);
     $.ajax({
         url: '/api/v1/contacts',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
             "name": $('#name').val(),
-            "phone": $('#phone').val()
+            "phone": $('#phone').val(),
+            "category": group
         }),
         dataType: 'json',
     })

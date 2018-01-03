@@ -41,8 +41,8 @@ router.put('/contact/:id', (req, res, next) => {
             console.log(result);
         });
     Contact.find({_id: req.params.id})
-        .then(task => {
-            res.json({task});
+        .then(contact => {
+            res.json({contact});
         })
         .catch(next);
 });
