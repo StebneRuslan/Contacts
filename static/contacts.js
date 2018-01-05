@@ -7,51 +7,61 @@ jQuery(function ($) {
 function getContacts() {
     $.get('/api/v1/contacts', function (data) {
         contacts = data.contacts;
-        console.log(data);
         renderContact(contacts);
     })
 }
 
 function renderContact(allContact) {
     allContact.forEach(function (element) {
-        let li = document.createElement('LI');
-        li.innerText = element.name + ' ' + element.phone;
-        li.setAttribute('id', `${element._id}`);
-
-        let del = document.createElement('SPAN');
-        del.addEventListener('click', removeContact);
-        del.setAttribute('class', 'btn btn-danger btn-xs glyphicon glyphicon-remove');
-
-        let edit = document.createElement('SPAN');
-        edit.addEventListener('click', editContact);
-        edit.setAttribute('class', 'btn btn-warning btn-xs glyphicon glyphicon-edit');
-
-        li.append(edit);
-        li.append(del);
-        $('#contacts').append(li);
+        createContact(element);
     })
 }
 
-function addContact() {
-    let group = [];
-    // debugger;
-    document.querySelectorAll('input[type=checkbox]').forEach(function (element) {
+function createContact(element) {
+    let li = document.createElement('LI');
+    li.innerText = element.name + ' ' + element.phone;
+    li.setAttribute('id', `${element._id}`);
+
+    let del = document.createElement('SPAN');
+    del.addEventListener('click', removeContact);
+    del.setAttribute('class', 'btn btn-danger btn-xs glyphicon glyphicon-remove');
+
+    let edit = document.createElement('SPAN');
+    edit.addEventListener('click', editContact);
+    edit.setAttribute('class', 'btn btn-warning btn-xs glyphicon glyphicon-edit');
+
+    li.append(edit);
+    li.append(del);
+    $('#contacts').append(li);
+}
+
+function isCheced() {
+    let group = ['All'];
+    let checkBoxes = document.querySelectorAll('input[type=checkbox]');
+    checkBoxes.forEach(function (element) {
         if (element.checked === true) {
             group.push(element.value);
         }
     });
-    console.log(group);
+    return group;
+}
+
+function addContact() {
+    let group = isCheced();
+
+    let element = {
+        name: $('#name').val(),
+        phone: $('#phone').val(),
+        category: group
+    };
+
     $.ajax({
         url: '/api/v1/contacts',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({
-            "name": $('#name').val(),
-            "phone": $('#phone').val(),
-            "category": group
-        }),
+        data: JSON.stringify(element),
         dataType: 'json',
-    })
+    });
 }
 
 function removeContact(e) {
@@ -61,36 +71,67 @@ function removeContact(e) {
         dataType: 'json'
     });
     $(`#${e.target.parentElement.id}`).remove();
+
+    let deletedElement = {};
+    for (let i = 0; i < contacts.length; i ++) {
+        if (contacts[i]._id === e.target.parentElement.id) {
+            deletedElement = contacts[i];
+        }
+    }
+    contacts.splice(contacts.indexOf(deletedElement, 1));
 }
 
 function editContact(e) {
     let contactText = e.target.parentElement.innerText;
+
+    let li = e.target.parentElement.cloneNode(true);
+    console.dir(li);
+
     let contact = {
+        category: [],
+        _id: e.target.parentElement.id,
         name: contactText.split(' ')[0],
         phone: contactText.split(' ')[1]
     };
+
+    for (let i = 0; i < contacts.length; i++) {
+        if (contacts[i]._id === e.target.parentElement.id) {
+            contact.category = contacts[i].category;
+        }
+    }
+    document.querySelectorAll('input[type=checkbox]').forEach(function (element) {
+       if (contact.category.includes(element.value)) {
+           element.checked = true;
+       }
+    });
 
     let contactDiv = document.createElement('FORM');
     let name = document.createElement('INPUT');
     let phone = document.createElement('INPUT');
     let save = document.createElement('INPUT');
+
+
     save.setAttribute('type', 'submit');
-    save.setAttribute('class', 'tn btn-primary');
+    save.setAttribute('class', 'btn btn-primary ');
     save.innerText = 'Save';
+
     name.setAttribute('type', 'text');
     name.setAttribute('class', 'form-control');
     name.setAttribute('id', 'editName');
+    name.value = contact.name;
+
     phone.setAttribute('type', 'text');
     phone.setAttribute('class', 'form-control');
     phone.setAttribute('id', 'editPhone');
-    name.value = contact.name;
     phone.value = contact.phone;
+
     contactDiv.append(name);
     contactDiv.append(phone);
     contactDiv.append(save);
 
-
-    save.addEventListener('click', function () {
+    save.addEventListener('click', function (event) {
+        event.preventDefault();
+        let group = isCheced();
         $.ajax({
             url: `/api/v1/contact/${e.target.parentElement.id}`,
             type: 'PUT',
@@ -98,10 +139,31 @@ function editContact(e) {
             contentType: 'application/json',
             data: JSON.stringify({
                 name: $('#editName').val(),
-                phone: $('#editPhone').val()
+                phone: $('#editPhone').val(),
+                category: group
             })
-        })
+        });
+        li.querySelector('.btn-warning').addEventListener('click', editContact);
+        li.querySelector('.btn-danger').addEventListener('click', removeContact);
+        li.childNodes[0].data = ($('#editName').val() + ' ' + $('#editPhone').val()).toString();
+        for (let i = 0; i < contacts.length; i++) {
+            if (contacts[i]._id === contact._id) {
+                contacts[i].name = $('#editName').val();
+                contacts[i].phone = $('#editPhone').val();
+                contacts[i].category = group;
+            }
+        }
+        $('#contacts form').replaceWith(li);
+        disabledCheckBoxes();
     });
 
+
     $(`#${e.target.parentElement.id}`).replaceWith(contactDiv);
+}
+
+function disabledCheckBoxes() {
+    let checkBoxes = document.querySelectorAll('input[type=checkbox]');
+    checkBoxes.forEach(function (element) {
+            element.checked = false;
+    });
 }

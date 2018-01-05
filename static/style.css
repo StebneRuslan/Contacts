@@ -1,6 +1,6 @@
 li {
     list-style-type: none;
-    width: 400px;
+    width: 200px;
     border: 1px solid grey;
     padding: 5px;
     margin: 5px;
@@ -12,7 +12,7 @@ span {
 }
 
 form {
-    width: 500px;
+    width: 300px;
     /*border: 1px solid black;*/
 }
 
@@ -23,10 +23,48 @@ input {
 .container {
     display: flex;
     flex-direction: row;
+    margin: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+ul form {
+    /*border: 2px solid rebeccapurple;*/
+    background-color: aliceblue;
+    min-height: 150px;
+
 }
 
 .form {
     margin: 10px;
-    border: 1px solid black;
+    border: 1px solid antiquewhite;
     padding: 10px;
+    background-color: aliceblue;
+}
+
+.vertical {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type=submit] {
+    float: right;
+    width: 100%;
+}
+
+input[type=text], input[type=tel] {
+    float: right;
+    width: 100%;
+}
+
+input[type=checkbox], label {
+    display: inline;
+    margin-left: 5px;
+}
+
+.test {
+    background: grey;
 }
