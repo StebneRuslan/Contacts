@@ -1,6 +1,8 @@
 let contacts = [];
 jQuery(function ($) {
     $('#submit').on('click', addContact);
+    $('#hideFormContacts').on('click', hideContactForm);
+    $('#hideFormContacts').on('click', hideCheckBoxes);
     getContacts(contacts);
 });
 
@@ -18,21 +20,25 @@ function renderContact(allContact) {
 }
 
 function createContact(element) {
-    let li = document.createElement('LI');
-    li.innerText = element.name + ' ' + element.phone;
-    li.setAttribute('id', `${element._id}`);
+    if (element.name !== '' && element.phone !== '') {
+        let li = document.createElement('LI');
+        li.innerText = element.name + ' ' + element.phone;
+        li.setAttribute('id', `${element._id}`);
 
-    let del = document.createElement('SPAN');
-    del.addEventListener('click', removeContact);
-    del.setAttribute('class', 'btn btn-danger btn-xs glyphicon glyphicon-remove');
+        let del = document.createElement('SPAN');
+        del.addEventListener('click', removeContact);
+        del.setAttribute('class', 'btn btn-danger btn-xs glyphicon glyphicon-remove');
 
-    let edit = document.createElement('SPAN');
-    edit.addEventListener('click', editContact);
-    edit.setAttribute('class', 'btn btn-warning btn-xs glyphicon glyphicon-edit');
+        let edit = document.createElement('SPAN');
+        edit.addEventListener('click', editContact);
+        edit.addEventListener('click', hideCheckBoxes);
 
-    li.append(edit);
-    li.append(del);
-    $('#contacts').append(li);
+        edit.setAttribute('class', 'btn btn-warning btn-xs glyphicon glyphicon-edit');
+
+        li.append(edit);
+        li.append(del);
+        $('#contacts').append(li);
+    }
 }
 
 function isCheced() {
@@ -103,6 +109,8 @@ function editContact(e) {
        if (contact.category.includes(element.value)) {
            element.checked = true;
        }
+       debugger;
+       element.nextElementSibling.classList.add('checkBoxEdit');
     });
 
     let contactDiv = document.createElement('FORM');
@@ -129,33 +137,41 @@ function editContact(e) {
     contactDiv.append(phone);
     contactDiv.append(save);
 
+
     save.addEventListener('click', function (event) {
         event.preventDefault();
         let group = isCheced();
-        $.ajax({
-            url: `/api/v1/contact/${e.target.parentElement.id}`,
-            type: 'PUT',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                name: $('#editName').val(),
-                phone: $('#editPhone').val(),
-                category: group
-            })
-        });
-        li.querySelector('.btn-warning').addEventListener('click', editContact);
-        li.querySelector('.btn-danger').addEventListener('click', removeContact);
-        li.childNodes[0].data = ($('#editName').val() + ' ' + $('#editPhone').val()).toString();
-        for (let i = 0; i < contacts.length; i++) {
-            if (contacts[i]._id === contact._id) {
-                contacts[i].name = $('#editName').val();
-                contacts[i].phone = $('#editPhone').val();
-                contacts[i].category = group;
+        if ($('#editName').val() !== '' && $('#editPhone').val() !== '') {
+            $.ajax({
+                url: `/api/v1/contact/${e.target.parentElement.id}`,
+                type: 'PUT',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    name: $('#editName').val(),
+                    phone: $('#editPhone').val(),
+                    category: group
+                })
+            });
+            li.querySelector('.btn-warning').addEventListener('click', editContact);
+            li.querySelector('.btn-danger').addEventListener('click', removeContact);
+            li.childNodes[0].data = ($('#editName').val() + ' ' + $('#editPhone').val()).toString();
+            for (let i = 0; i < contacts.length; i++) {
+                if (contacts[i]._id === contact._id) {
+                    contacts[i].name = $('#editName').val();
+                    contacts[i].phone = $('#editPhone').val();
+                    contacts[i].category = group;
+                }
             }
+            $('#contacts form').replaceWith(li);
+            disabledCheckBoxes();
+            document.querySelectorAll('input[type=checkbox]').forEach(function (element) {
+                element.nextElementSibling.classList.remove('checkBoxEdit');
+            });
+
         }
-        $('#contacts form').replaceWith(li);
-        disabledCheckBoxes();
     });
+    save.addEventListener('click', hideCheckBoxes)
 
 
     $(`#${e.target.parentElement.id}`).replaceWith(contactDiv);
@@ -166,4 +182,17 @@ function disabledCheckBoxes() {
     checkBoxes.forEach(function (element) {
             element.checked = false;
     });
+}
+
+function isNumberKey(e) {
+    let charCode = (e.which) ? e.which : event.keyCode;
+    return !(charCode > 31 && (charCode < 48 || charCode > 57));
+}
+
+function hideContactForm() {
+    $('#contactsForm form')[0].classList.toggle('hide');
+}
+
+function hideCheckBoxes() {
+    $('#checkBoxes')[0].classList.toggle('hide');
 }

@@ -2,6 +2,7 @@ let groups = [];
 
 jQuery(function ($) {
     $('#groupSubmit').on('click', addGroup);
+    $('#hideFormGroups').on('click', hideGroupForm);
     getGroups();
 });
 
@@ -9,7 +10,7 @@ function getGroups() {
     $.get('/api/v1/groups', function (data) {
         groups = data.groups;
         renderGroup();
-        addGroupCheckBoxes($('#contactsForm'));
+        addGroupCheckBoxes($('#checkBoxes'));
     })
 }
 
@@ -82,15 +83,17 @@ function hideContacts() {
 }
 
 function addGroup() {
-    $.ajax({
-        url: '/api/v1/groups',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
-            "title": $('#title').val()
-        }),
-        dataType: 'json',
-    })
+    if ($('#title').val() !== '') {
+        $.ajax({
+            url: '/api/v1/groups',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "title": $('#title').val()
+            }),
+            dataType: 'json',
+        })
+    }
 }
 
 function removeGroup(e) {
@@ -132,34 +135,40 @@ function editGroup(e) {
 
 
     save.addEventListener('click', function () {
-        $.ajax({
-            url: `/api/v1/group/${e.target.parentElement.id}`,
-            type: 'PUT',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                title: $('#editTitle').val()
-            })
-        });
+        if ($('#editTitle').val() !== '') {
+            $.ajax({
+                url: `/api/v1/group/${e.target.parentElement.id}`,
+                type: 'PUT',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    title: $('#editTitle').val()
+                })
+            });
 
-        let contactId = 0;
-        for (let i = 0; i < contacts.length; i++) {
-            for (let j = 0; j < contacts[i].category.length; j++) {
-                if (contacts[i].category[j] === text) {
-                    contacts[i].category.splice(contacts[i].category.indexOf(text), 1);
-                    contacts[i].category.push($('#editTitle').val().toString());
-                    contactId = contacts[i]._id;
-                    $.ajax({
-                        url: `/api/v1/contact/${contactId}`,
-                        type: 'PUT',
-                        dataType: 'json',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            category: contacts[i].category
+            let contactId = 0;
+            for (let i = 0; i < contacts.length; i++) {
+                for (let j = 0; j < contacts[i].category.length; j++) {
+                    if (contacts[i].category[j] === text) {
+                        contacts[i].category.splice(contacts[i].category.indexOf(text), 1);
+                        contacts[i].category.push($('#editTitle').val().toString());
+                        contactId = contacts[i]._id;
+                        $.ajax({
+                            url: `/api/v1/contact/${contactId}`,
+                            type: 'PUT',
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                category: contacts[i].category
+                            })
                         })
-                    })
+                    }
                 }
             }
         }
     });
+}
+
+function hideGroupForm() {
+    $('#groupForm form')[0].classList.toggle('hide');
 }

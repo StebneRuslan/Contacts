@@ -13,35 +13,44 @@
     <title>Title</title>
 </head>
 <body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand"  id="hideFormContacts">Add contact</a>
+            <a class="navbar-brand"  id="hideFormGroups">Add group</a>
+        </div>
+    </nav>
 
+</header>
 <div class="container">
     <div class="form">
         <div class="vertical">
-            <div>
+            <div id="groupForm">
                 <h3>Groups</h3>
-                <form>
-                    <input id="title" type="text" class="form-control" placeholder="Title">
+                <form class="hide">
+                    <input id="title" type="text" class="form-control" placeholder="Title" required="">
                     <input id="groupSubmit" type="submit" class="btn btn-primary">
                 </form>
             </div>
-            <div>
-                <ul id="groups">
-                    <li id="allContacts" data-group="All">All contacts</li>
-                </ul>
-            </div>
+        </div>
+        <div>
+            <ul id="groups">
+                <li id="allContacts" data-group="All">All contacts</li>
+            </ul>
         </div>
     </div>
 
-    <div class="form">
+    <div class="form contacts">
         <div class="vertical">
-            <div>
+            <div id="contactsForm">
                 <h3>Contacts</h3>
-                <form id="contactsForm">
-                    <input id="name" type="text" class="form-control" placeholder="Name">
-                    <input id="phone" type="tel" class="form-control" placeholder="Phone">
+                <form class="hide">
+                    <input id="name" type="text" class="form-control" placeholder="Name" required="">
+                    <input id="phone" type="tel" class="form-control" placeholder="Phone" required="" onkeypress="return isNumberKey(event)">
                     <input id="submit" type="submit" class="btn btn-primary">
                 </form>
             </div>
+            <div id="checkBoxes" class="hide"></div>
             <div>
                 <ul id="contacts"></ul>
             </div>

@@ -1,6 +1,6 @@
 li {
     list-style-type: none;
-    width: 200px;
+    width: 485px;
     border: 1px solid grey;
     padding: 5px;
     margin: 5px;
@@ -12,8 +12,7 @@ span {
 }
 
 form {
-    width: 300px;
-    /*border: 1px solid black;*/
+    width: 500px;
 }
 
 input {
@@ -32,17 +31,13 @@ ul {
 }
 
 ul form {
-    /*border: 2px solid rebeccapurple;*/
-    background-color: aliceblue;
     min-height: 150px;
 
 }
 
 .form {
     margin: 10px;
-    border: 1px solid antiquewhite;
     padding: 10px;
-    background-color: aliceblue;
 }
 
 .vertical {
@@ -50,7 +45,7 @@ ul form {
     flex-direction: column;
 }
 
-input[type=submit] {
+input[type=submit], button {
     float: right;
     width: 100%;
 }
@@ -66,5 +61,21 @@ input[type=checkbox], label {
 }
 
 .test {
-    background: grey;
+    background: lightgray;
+}
+
+li:hover {
+    background: aliceblue;
+}
+
+.checkBoxEdit {
+    color: rebeccapurple;
+}
+
+.hide {
+    display: none;
+}
+
+form ~ div {
+    display: none;
 }
