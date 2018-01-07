@@ -89,9 +89,7 @@ function removeContact(e) {
 
 function editContact(e) {
     let contactText = e.target.parentElement.innerText;
-
     let li = e.target.parentElement.cloneNode(true);
-    console.dir(li);
 
     let contact = {
         category: [],
@@ -105,11 +103,11 @@ function editContact(e) {
             contact.category = contacts[i].category;
         }
     }
+
     document.querySelectorAll('input[type=checkbox]').forEach(function (element) {
        if (contact.category.includes(element.value)) {
            element.checked = true;
        }
-       debugger;
        element.nextElementSibling.classList.add('checkBoxEdit');
     });
 
@@ -141,25 +139,31 @@ function editContact(e) {
     save.addEventListener('click', function (event) {
         event.preventDefault();
         let group = isCheced();
-        if ($('#editName').val() !== '' && $('#editPhone').val() !== '') {
+        let editName = $('#editName').val();
+        let editPhone = $('#editPhone').val();
+
+        if (editName !== '' && editPhone !== '') {
             $.ajax({
                 url: `/api/v1/contact/${e.target.parentElement.id}`,
                 type: 'PUT',
                 dataType: 'json',
                 contentType: 'application/json',
                 data: JSON.stringify({
-                    name: $('#editName').val(),
-                    phone: $('#editPhone').val(),
+                    name: editName,
+                    phone: editPhone,
                     category: group
                 })
             });
-            li.querySelector('.btn-warning').addEventListener('click', editContact);
+
+            let editBtn = li.querySelector('.btn-warning');
+            editBtn.addEventListener('click', editContact);
+            editBtn.addEventListener('click', hideCheckBoxes);
             li.querySelector('.btn-danger').addEventListener('click', removeContact);
-            li.childNodes[0].data = ($('#editName').val() + ' ' + $('#editPhone').val()).toString();
+            li.childNodes[0].data = (editName + ' ' +editPhone).toString();
             for (let i = 0; i < contacts.length; i++) {
                 if (contacts[i]._id === contact._id) {
-                    contacts[i].name = $('#editName').val();
-                    contacts[i].phone = $('#editPhone').val();
+                    contacts[i].name = editName;
+                    contacts[i].phone = editPhone;
                     contacts[i].category = group;
                 }
             }
@@ -171,8 +175,7 @@ function editContact(e) {
 
         }
     });
-    save.addEventListener('click', hideCheckBoxes)
-
+    save.addEventListener('click', hideCheckBoxes);
 
     $(`#${e.target.parentElement.id}`).replaceWith(contactDiv);
 }
